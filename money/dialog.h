@@ -28,6 +28,8 @@ private:
     QNetworkAccessManager *manager;
     QPoint pos;
     bool drag;
+
+    float sz, cyb;
 };
 
 #endif // DIALOG_H

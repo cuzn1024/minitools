@@ -3,9 +3,9 @@
 #include <QtNetwork>
 
 Dialog::Dialog(QWidget *parent)
-    : QDialog(parent), pos(0, 0), drag(false)
+    : QDialog(parent), pos(0, 0), drag(false), sz(0), cyb(0)
 {
-    setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
+    setWindowFlags(Qt::FramelessWindowHint);
 
     QVBoxLayout *vLayout = new QVBoxLayout();
     setLayout(vLayout);
@@ -30,6 +30,25 @@ Dialog::Dialog(QWidget *parent)
         allStockData.push_back(stockData);
     }
 
+    QHBoxLayout *hLayout = new QHBoxLayout;
+    vLayout->addLayout(hLayout);
+    QLabel *name = new QLabel;
+    name->setObjectName(QString("current_sz"));
+    name->setFixedSize(50, 20);
+    hLayout->addWidget(name);
+    QLabel *ratio = new QLabel;
+    ratio->setObjectName(QString("highest_sz"));
+    ratio->setFixedSize(50, 20);
+    hLayout->addWidget(ratio);
+    ratio = new QLabel;
+    ratio->setObjectName(QString("current_cyb"));
+    ratio->setFixedSize(50, 20);
+    hLayout->addWidget(ratio);
+    ratio = new QLabel;
+    ratio->setObjectName(QString("highest_cyb"));
+    ratio->setFixedSize(50, 20);
+    hLayout->addWidget(ratio);
+
     for (int i = 0; i < allStockData.count(); i++)
     {
         QHBoxLayout *hLayout = new QHBoxLayout();
@@ -45,17 +64,12 @@ Dialog::Dialog(QWidget *parent)
         hLayout->addWidget(ratio);
         ratio = new QLabel;
         ratio->setObjectName(QString("todayratio_%1").arg(data.at(0)));
-        ratio->setPalette(Qt::red);
         ratio->setFixedSize(50, 20);
         hLayout->addWidget(ratio);
         ratio = new QLabel;
         ratio->setObjectName(QString("highestratio_%1").arg(data.at(0)));
         ratio->setFixedSize(50, 20);
         hLayout->addWidget(ratio);
-        QLabel *money = new QLabel;
-        money->setObjectName(QString("money_%1").arg(data.at(0)));
-        money->setFixedSize(60, 20);
-        hLayout->addWidget(money);
     }
 
     manager = new QNetworkAccessManager(this);
@@ -75,7 +89,7 @@ Dialog::~Dialog()
 
 void Dialog::updateData()
 {
-    QString query = "http://hq.sinajs.cn/list=";
+    QString query = "http://hq.sinajs.cn/list=sh000001,sz399006,";
     for (int i = 0; i < allStockData.count(); i++)
     {
         query += allStockData.at(i).at(0);
@@ -97,6 +111,47 @@ void Dialog::replyFinished(QNetworkReply *networkReply)
     foreach (reply, replyList)
     {
         QString code = reply.mid(11, 8);
+
+        if (code == "sh000001")
+        {
+            reply = reply.split("\"").at(1);
+            QStringList data = reply.split(",");
+            float current = data.at(3).toFloat();
+
+            QLabel *label = findChild<QLabel*>(QString("current_sz"));
+            QString prefix = current == sz ? "" : (current > sz ? "↑" : "↓");
+            label->setText(prefix + QString("%1%").arg(
+                               int((current - data.at(2).toFloat()) / data.at(2).toFloat() * 10000) / 100.0
+                               ));
+
+            label = findChild<QLabel*>(QString("highest_sz"));
+            label->setText(QString("%1%").arg(
+                               int((data.at(4).toFloat() - data.at(2).toFloat()) / data.at(2).toFloat() * 10000) / 100.0
+                               ));
+
+            sz = current;
+            continue;
+        }
+        else if (code == "sz399006")
+        {
+            reply = reply.split("\"").at(1);
+            QStringList data = reply.split(",");
+            float current = data.at(3).toFloat();
+
+            QLabel *label = findChild<QLabel*>(QString("current_cyb"));
+            QString prefix = current == cyb ? "" : (current > cyb ? "↑" : "↓");
+            label->setText(prefix + QString("%1%").arg(
+                               int((current - data.at(2).toFloat()) / data.at(2).toFloat() * 10000) / 100.0
+                               ));
+
+            label = findChild<QLabel*>(QString("highest_cyb"));
+            label->setText(QString("%1%").arg(
+                               int((data.at(4).toFloat() - data.at(2).toFloat()) / data.at(2).toFloat() * 10000) / 100.0
+                               ));
+
+            cyb = current;
+            continue;
+        }
 
         int index = -1;
         for (int i = 0; i < allStockData.size(); i++)
@@ -120,20 +175,14 @@ void Dialog::replyFinished(QNetworkReply *networkReply)
                            ));
 
         label = findChild<QLabel*>(QString("todayratio_%1").arg(code));
-        float todayRatio = int((current - data.at(2).toFloat()) / data.at(2).toFloat() * 10000) / 100.0;
         label->setText(prefix + QString("%1%").arg(
                            int((current - data.at(2).toFloat()) / data.at(2).toFloat() * 10000) / 100.0
                            ));
-
-        label->setAutoFillBackground(!allStockData.at(index).at(4).isEmpty() && (todayRatio > 0 && allStockData.at(index).at(4).toFloat() < todayRatio || todayRatio < 0 && allStockData.at(index).at(4).toFloat() > todayRatio));
 
         label = findChild<QLabel*>(QString("highestratio_%1").arg(code));
         label->setText(QString("%1%").arg(
                            int((data.at(4).toFloat() - allStockData.at(index).at(1).toFloat()) / allStockData.at(index).at(1).toFloat() * 10000) / 100.0
                            ));
-
-        label = findChild<QLabel*>(QString("money_%1").arg(code));
-        label->setText(QString::number(allStockData.at(index).at(2).toInt() * (current - allStockData.at(index).at(1).toFloat())));
 
         allStockData[index][3] = QString::number(current);
     }
