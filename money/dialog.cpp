@@ -5,7 +5,13 @@
 Dialog::Dialog(QWidget *parent)
     : QDialog(parent), pos(0, 0), drag(false), sz(0), cyb(0)
 {
-    setWindowFlags(Qt::FramelessWindowHint);
+    setWindowFlags(windowFlags() | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+
+    spinButton = new QPushButton("|", this);
+    spinButton->setFixedSize(20, 20);
+    spinButton->show();
+
+    connect(spinButton, SIGNAL(clicked()), this, SLOT(spinClicked()));
 
     QVBoxLayout *vLayout = new QVBoxLayout();
     setLayout(vLayout);
@@ -80,6 +86,28 @@ Dialog::Dialog(QWidget *parent)
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(updateData()));
     timer->start(3000);
+}
+
+void Dialog::showEvent(QShowEvent * event)
+{
+    spinButton->move(width() - spinButton->width(), 0);
+}
+
+void Dialog::spinClicked()
+{
+    if (spinButton->text() == "|")
+    {
+        spinButton->setText("-");
+        setWindowFlags(windowFlags() & ~Qt::WindowStaysOnTopHint);
+        show();
+    }
+    else
+    {
+        spinButton->setText("|");
+        setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+        show();
+    }
+
 }
 
 Dialog::~Dialog()

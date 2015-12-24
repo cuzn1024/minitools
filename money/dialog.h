@@ -16,16 +16,19 @@ public:
 private slots:
     void updateData();
     void replyFinished(QNetworkReply*);
+    void spinClicked();
 
 protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
+    void showEvent(QShowEvent * event);
 
 private:
     QList<QList<QString>> allStockData;
 
     QNetworkAccessManager *manager;
+    QPushButton *spinButton;
     QPoint pos;
     bool drag;
 
