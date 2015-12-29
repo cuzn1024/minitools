@@ -103,9 +103,10 @@
         echo "setTimeout('updateStocks()', 2000);";
     }
 ?>
+
         </script>
     </head>
-    <body ondblclick="document.getElementById('edit').style.visibility = document.getElementById('hidden').style.visibility = document.getElementsByTagName('table')[0].style.visibility='visible';setTimeout('updateStocks()', 2000);">
+    <body ondblclick="document.getElementById('hidden').style.visibility = document.getElementsByTagName('table')[0].style.visibility='visible';setTimeout('updateStocks()', 2000);">
         <table border="1" style="visibility:visible">
             <tr><td width="50"></td><td width="50"></td><td width="50"></td><td width="50"></td></tr>
             <?php
@@ -116,13 +117,12 @@
                     echo "<td width='50'></td>";
                     echo "<td width='50'></td>";
                     echo "<td width='50'></td>";
-                    echo "<td style='display:none'><button id='remove$index'>remove</button></td>";
+                    echo "<td><form action='./deleteStock.php' method='post'><button name='del' value='" . $stocks[$index]["id"] . "'>remove</button><input type='hidden' name='user' value='" . $_POST['username'] . "'/></form></td>";
                     echo "</tr>";
                 }
             ?>
         </table>
         <br />
-        <button id="edit">Edit</button>
-        <button id="hidden" onclick="document.getElementById('edit').style.visibility = document.getElementById('hidden').style.visibility = document.getElementsByTagName('table')[0].style.visibility='hidden';">Hidden</button>
+        <button id="hidden" onclick="document.getElementById('hidden').style.visibility = document.getElementsByTagName('table')[0].style.visibility='hidden';">Hidden</button>
     </body>
 </html>

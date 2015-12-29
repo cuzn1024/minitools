@@ -58,4 +58,11 @@ function readStocksOfUser($username, $password) {
     die("cannot find such user info:" . mysql_error());
 }
 
+function deleteStock($username, $stockId)
+{
+    $con = openDatabase();
+
+    mysql_query("delete from stock where user_id=(select id from user where name='$username')  and id=$stockId");
+}
+
 ?>
