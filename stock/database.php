@@ -65,4 +65,11 @@ function deleteStock($username, $stockId)
     mysql_query("delete from stock where user_id=(select id from user where name='$username')  and id=$stockId");
 }
 
+function addStock($username, $code, $price, $count)
+{
+    $con = openDatabase();
+
+    mysql_query("INSERT INTO stock(`code`, `price`, `count`, `user_id`) VALUES ('$code', '$price', '$count', (select id from user where user.name='$username'))");
+}
+
 ?>

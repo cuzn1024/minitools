@@ -91,7 +91,7 @@
                     }
                 ?>
 
-                    if (document.getElementsByTagName('table')[0].style.visibility == 'visible')
+                    if (document.getElementsByTagName('div')[0].style.visibility == 'visible')
                     {
                         setTimeout('updateStocks()', 2000);
                     }
@@ -106,23 +106,37 @@
 
         </script>
     </head>
-    <body ondblclick="document.getElementById('hidden').style.visibility = document.getElementsByTagName('table')[0].style.visibility='visible';setTimeout('updateStocks()', 2000);">
-        <table border="1" style="visibility:visible">
-            <tr><td width="50"></td><td width="50"></td><td width="50"></td><td width="50"></td></tr>
-            <?php
-                for ($index = 0; $index < count($stocks); $index++)
-                {
-                    echo "<tr>";
-                    echo "<td width='50'></td>";
-                    echo "<td width='50'></td>";
-                    echo "<td width='50'></td>";
-                    echo "<td width='50'></td>";
-                    echo "<td><form action='./deleteStock.php' method='post'><button name='del' value='" . $stocks[$index]["id"] . "'>remove</button><input type='hidden' name='user' value='" . $_POST['username'] . "'/></form></td>";
-                    echo "</tr>";
-                }
-            ?>
-        </table>
-        <br />
-        <button id="hidden" onclick="document.getElementById('hidden').style.visibility = document.getElementsByTagName('table')[0].style.visibility='hidden';">Hidden</button>
+    <body ondblclick="document.getElementsByTagName('div')[0].style.visibility ='visible';setTimeout('updateStocks()', 2000);">
+        <div style="visibility:visible">
+            <table border="1">
+                <tr><td width="50"></td><td width="50"></td><td width="50"></td><td width="50"></td></tr>
+                <?php
+                    for ($index = 0; $index < count($stocks); $index++)
+                    {
+                        echo "<tr>";
+                        echo "<td width='50'></td>";
+                        echo "<td width='50'></td>";
+                        echo "<td width='50'></td>";
+                        echo "<td width='50'></td>";
+                        echo "<td><form action='./deletestock.php' method='post' onsubmit='return confirm(\"Confirm to remove!\");'><button name='id' value='" . $stocks[$index]["id"] . "'>remove</button><input type='hidden' name='user' value='" . $_POST['username'] . "'/></form></td>";
+                        echo "</tr>";
+                    }
+                ?>
+            </table>
+            <br />
+            <table>
+                <tr>
+                    <form action='./addstock.php' method='post'>
+                        <td><input size="8" type="text" placeholder="code" name="code"></input></td>
+                        <td><input size="8" type="text" placeholder="price" name="price"></input></td>
+                        <td><input size="8" type="text" placeholder="count" name="count"></input></td>
+                        <td><button name='user' value=<?php echo "'" . $_POST['username'] . "'"; ?>>add</button></td>
+                    </form>
+                </tr>
+                <tr>
+                    <td><button id="hidden" onclick="document.getElementsByTagName('div')[0].style.visibility='hidden';">Hidden</button></td>
+                </tr>
+            </table>
+        </div>
     </body>
 </html>
