@@ -4,7 +4,7 @@
     </head>
     <body>
         <center>
-            <form action="http://localhost/stock/index.php" method="post">
+            <form action="./index.php" method="post">
                 User name: 
                 <input type="text" name="username" />
                 <br />

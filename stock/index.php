@@ -5,7 +5,7 @@
 
     if (empty($_POST) || empty($_POST['username']))
     {
-        header("Location: http://localhost/stock/login.php");
+        header("Location: http://money.cuzn1024.com/login.php");
         exit;
     }
 
@@ -13,13 +13,14 @@
 
     if ($stocks == -1)
     {
-        header("Location: http://localhost/stock/login.php");
+        header("Location: http://money.cuzn1024.com/login.php");
         exit;
     }
 ?>
 
 <html>
     <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <title>Re&#58;</title>
         <script type='text/javascript'>
             var sz = 0, cyb = 0;
@@ -64,18 +65,24 @@
                 loadScript(<?php echo "'$url'"; ?>, function(){
                     var words;
                     var tr;
+                    var title;
 
                     words = hq_str_sh000001.split(',');
                     tr = document.getElementsByTagName('tr')[0];
-                    tr.childNodes[0].textContent = (parseFloat(words[3]) == sz ? "" : (parseFloat(words[3]) > sz ? "↑" : "↓")) + Math.round((parseFloat(words[3]) - parseFloat(words[2])) / parseFloat(words[2]) * 10000) / 100.0;
+                    tr.childNodes[0].textContent = (parseFloat(words[3]) == sz ? "" : (parseFloat(words[3]) > sz ? "↑ " : "↓")) + Math.round((parseFloat(words[3]) - parseFloat(words[2])) / parseFloat(words[2]) * 10000) / 100.0;
                     tr.childNodes[1].textContent = Math.round((parseFloat(words[4]) - parseFloat(words[2])) / parseFloat(words[2]) * 10000) / 100.0;
                     sz = parseFloat(words[3]);
+                    title = "Re:"
+                    title += tr.childNodes[0].textContent;
+                    title += " ";
 
                     words = hq_str_sz399006.split(',');
                     tr = document.getElementsByTagName('tr')[0];
-                    tr.childNodes[2].textContent = (parseFloat(words[3]) == sz ? "" : (parseFloat(words[3]) > sz ? "↑" : "↓")) + Math.round((parseFloat(words[3]) - parseFloat(words[2])) / parseFloat(words[2]) * 10000) / 100.0;
+                    tr.childNodes[2].textContent = (parseFloat(words[3]) == cyb ? "" : (parseFloat(words[3]) > cyb ? "↑ " : "↓")) + Math.round((parseFloat(words[3]) - parseFloat(words[2])) / parseFloat(words[2]) * 10000) / 100.0;
                     tr.childNodes[3].textContent = Math.round((parseFloat(words[4]) - parseFloat(words[2])) / parseFloat(words[2]) * 10000) / 100.0;
                     cyb = parseFloat(words[3]);
+                    title += tr.childNodes[2].textContent;
+                    document.title = title;
 
                 <?php
                     for ($index = 0; $index < count($stocks); $index++)
@@ -83,9 +90,9 @@
                         echo "words = hq_str_" . $stocks[$index]["code"] . ".split(',');";
                         echo "tr = document.getElementsByTagName('tr')[" . ($index + 1) . "];";
                         echo "tr.childNodes[0].textContent = words[0].charAt(0);";
-                        echo "tr.childNodes[1].textContent = (parseFloat(words[3]) == current[$index] ? '' : (parseFloat(words[3]) > current[$index] ? '↑' : '↓')) + Math.round((parseFloat(words[3]) - parseFloat(words[2])) / parseFloat(words[2]) * 10000) / 100.0;";
-                        echo "tr.childNodes[2].textContent = Math.round((parseFloat(words[3]) - " . $stocks[$index]["price"] . ") / " . $stocks[$index]["price"] . " * 10000) / 100.0;";
-                        echo "tr.childNodes[3].textContent = Math.round((parseFloat(words[3]) - " . $stocks[$index]["price"] . ") * " . $stocks[$index]["count"] .");";
+                        echo "tr.childNodes[1].textContent = (parseFloat(words[3]) == current[$index] ? '' : (parseFloat(words[3]) > current[$index] ? '↑ ' : '↓')) + Math.round((parseFloat(words[3]) - parseFloat(words[2])) / parseFloat(words[2]) * 10000) / 100.0;";
+                        echo "tr.childNodes[2].textContent = Math.round((parseFloat(words[3]) - (" . $stocks[$index]["price"] . ")) / (" . $stocks[$index]["price"] . ") * 10000) / 100.0;";
+                        echo "tr.childNodes[3].textContent = Math.round((parseFloat(words[3]) - (" . $stocks[$index]["price"] . ")) * " . $stocks[$index]["count"] .");";
                         // echo "tr.childNodes[3].textContent = Math.round((parseFloat(words[4]) - parseFloat(words[2])) / parseFloat(words[2]) * 10000) / 100.0;";
                         echo "current[$index] = parseFloat(words[3]);";
                     }
@@ -139,4 +146,4 @@
             </table>
         </div>
     </body>
-</html>
+</html>	
